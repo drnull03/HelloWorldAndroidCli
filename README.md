@@ -1,3 +1,6 @@
+Of course. Here is the complete raw markdown for the updated `README.md` file.
+
+````markdown
 # Manual Android NDK App Build Guide
 
 I just hate grade and jave build system, This Repo is a refrence to building an android app manually using android Ndk (optionally) and the android Sdk.
@@ -18,8 +21,8 @@ The NDK version `27.3.13750724` corresponds to **NDK r27c**. The build process w
 
 ### SDK Versions: (35.0.0)
 
-- **Platform:** `android-35`
-- **Build Tools:** `35.0.0`
+-   **Platform:** `android-35`
+-   **Build Tools:** `35.0.0`
 
 All SDK-related commands will use tools from these specific versions.
 
@@ -33,16 +36,16 @@ Create the following directories from the root of your project:
 
 ```bash
 mkdir -p src/com/example/myndkapp res/layout res/values jni libs bin obj build
-```
+````
 
-- `src/com/example/myndkapp`: For your Java source files.
-- `res/layout`: For your layout XML files.
-- `res/values`: For your string and resource value XML files.
-- `jni`: For your native C/C++ source files.
-- `libs`: Will hold the compiled native libraries.
-- `bin`: Will hold intermediate and final APK files.
-- `obj`: Will hold compiled Java `.class` files.
-- `build`: A temporary directory for packaging native libraries.
+  - `src/com/example/myndkapp`: For your Java source files.
+  - `res/layout`: For your layout XML files.
+  - `res/values`: For your string and resource value XML files.
+  - `jni`: For your native C/C++ source files.
+  - `libs`: Will hold the compiled native libraries.
+  - `bin`: Will hold intermediate and final APK files.
+  - `obj`: Will hold compiled Java `.class` files.
+  - `build`: A temporary directory for packaging native libraries.
 
 ### Environment Variables
 
@@ -55,16 +58,18 @@ export PLATFORM=$ANDROID_HOME/platforms/android-35 #the final dir name is differ
 export BUILD_TOOLS=$ANDROID_HOME/build-tools/35.0.0 #the final dir name is different according to your Sdk version
 ```
 
-## 3. Prepare Your Files
+## 3\. Prepare Your Files
 
 Create the following files in their respective directories with the content provided.
 
 ### AndroidManifest.xml
 
 First, create the file in the root of your project.
+
 ```bash
 touch AndroidManifest.xml
 ```
+
 Then, add the following content. This file describes essential information about your app to the Android build tools, the Android operating system, and Google Play.
 
 ```xml
@@ -94,9 +99,11 @@ Then, add the following content. This file describes essential information about
 ### jni/native-lib.cpp
 
 First, create the file.
+
 ```bash
 touch jni/native-lib.cpp
 ```
+
 Then, add the following content. This is the C++ source file containing the native function that will be called from Java.
 
 ```cpp
@@ -119,9 +126,11 @@ Java_com_example_myndkapp_MainActivity_addNumbers(
 ### src/com/example/myndkapp/MainActivity.java
 
 First, create the file.
+
 ```bash
 touch src/com/example/myndkapp/MainActivity.java
 ```
+
 Then, add the following content. This is the main entry point for your app's user interface.
 
 ```java
@@ -159,12 +168,14 @@ public class MainActivity extends Activity {
 }
 ```
 
-### res/layout/activity_main.xml
+### res/layout/activity\_main.xml
 
 First, create the file.
+
 ```bash
 touch res/layout/activity_main.xml
 ```
+
 Then, add the following content. This XML file defines the layout for your main activity's UI.
 
 ```xml
@@ -187,9 +198,11 @@ Then, add the following content. This XML file defines the layout for your main 
 ### res/values/strings.xml
 
 First, create the file.
+
 ```bash
 touch res/values/strings.xml
 ```
+
 Then, add the following content. This file contains string resources for your app, such as the app name.
 
 ```xml
@@ -199,7 +212,7 @@ Then, add the following content. This file contains string resources for your ap
 </resources>
 ```
 
-## 4. Step-by-Step Build Process
+## 4\. Step-by-Step Build Process
 
 Follow these steps in order to build the application.
 
@@ -273,7 +286,24 @@ cp "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarc
 (cd build && zip -r ../bin/unaligned_app.apk lib)
 ```
 
-### Step 7: Align the APK
+### Step 7: Generate a Signing Key (Non-Interactive)
+
+Before you can sign the APK, you need a cryptographic key. This command uses the JDK's `keytool` to generate a `debug.keystore` file without asking any interactive questions. You only need to run this once.
+
+The `-dname` argument provides all the necessary identity information in one go. The `-storepass` and `-keypass` arguments are set to `android`, matching what the `apksigner` command expects.
+
+```bash
+keytool -genkeypair -v \
+  -keystore debug.keystore \
+  -alias androiddebugkey \
+  -keyalg RSA -keysize 2048 \
+  -validity 10000 \
+  -storepass android \
+  -keypass android \
+  -dname "CN=Android Debug, OU=Android, O=Android, L=Mountain View, S=California, C=US"
+```
+
+### Step 8: Align the APK
 
 This optimization step uses `zipalign` to ensure all uncompressed data within the APK is aligned.
 
@@ -281,22 +311,28 @@ This optimization step uses `zipalign` to ensure all uncompressed data within th
 $BUILD_TOOLS/zipalign -v 4 bin/unaligned_app.apk bin/MyNdkApp-final.apk
 ```
 
-### Step 8: Sign the APK
+### Step 9: Sign the APK
 
-This final step uses `apksigner` to cryptographically sign the APK with a debug key.
+This final step uses `apksigner` to cryptographically sign the APK with the debug key we just generated.
 
 ```bash
 $BUILD_TOOLS/apksigner sign \
     --ks debug.keystore \
+    --ks-key-alias androiddebugkey \
     --ks-pass pass:android \
     --out bin/MyNdkApp-signed.apk \
     bin/MyNdkApp-final.apk
 ```
 
-## 5. Installation
+## 5\. Installation
 
 The build is now complete. The final, installable application is located at `bin/MyNdkApp-signed.apk`.
 
 To install it on a connected device or emulator, run:
+
 ```bash
 adb install -r bin/MyNdkApp-signed.apk
+```
+
+```
+```
