@@ -20,9 +20,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // --- THIS IS THE FIX ---
-        // Use the generated R.id constant directly to find the TextView.
-        // This is safer and more efficient.
+
         TextView resultTextView = findViewById(R.id.result_textview);
 
         // Call the native C++ function
